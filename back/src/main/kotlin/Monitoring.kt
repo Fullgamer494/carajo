@@ -20,22 +20,9 @@ import java.sql.DriverManager
 import org.jetbrains.exposed.sql.*
 import org.slf4j.event.*
 
-fun Application.configureRouting() {
-    install(RequestValidation) {
-        validate<String> { bodyText ->
-            if (!bodyText.startsWith("Hello"))
-                ValidationResult.Invalid("Body text should start with 'Hello'")
-            else ValidationResult.Valid
-        }
-    }
-    install(StatusPages) {
-        exception<Throwable> { call, cause ->
-            call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
-        }
-    }
-    routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
+fun Application.configureMonitoring() {
+    install(CallLogging) {
+        level = Level.INFO
+        filter { call -> call.request.path().startsWith("/") }
     }
 }

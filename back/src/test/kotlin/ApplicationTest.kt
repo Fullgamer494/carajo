@@ -1,4 +1,4 @@
-package com.hugin_munin
+package com.example
 
 import io.ktor.client.request.*
 import io.ktor.http.*

@@ -1,13 +1,10 @@
-val kotlin_version: String by project
-val logback_version: String by project
-
 plugins {
-    kotlin("jvm") version "2.2.20"
-    id("io.ktor.plugin") version "3.3.2"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.20"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktor)
+    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
-group = "com.hugin_munin"
+group = "com.example"
 version = "0.0.1"
 
 application {
@@ -15,14 +12,22 @@ application {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core")
-    implementation("io.ktor:ktor-server-auth")
-    implementation("io.ktor:ktor-server-auth-jwt")
-    implementation("io.ktor:ktor-server-content-negotiation")
-    implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-server-netty")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-server-config-yaml")
-    testImplementation("io.ktor:ktor-server-test-host")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    implementation(libs.ktor.server.request.validation)
+    implementation(libs.ktor.server.call.logging)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.host.common)
+    implementation(libs.ktor.server.status.pages)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.server.content.negotiation)
+    implementation(libs.postgresql)
+    implementation(libs.h2)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.auth.jwt)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.logback.classic)
+    implementation(libs.ktor.server.config.yaml)
+    testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.kotlin.test.junit)
 }
