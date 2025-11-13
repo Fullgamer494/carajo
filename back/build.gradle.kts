@@ -30,4 +30,7 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+
+    //Extra dependencies
+    implementation("com.zaxxer:HikariCP:7.0.2")
 }
