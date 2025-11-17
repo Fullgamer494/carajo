@@ -13,11 +13,8 @@ data class RegistrationRequest(
     val originId: Int,
     val registeredBy: Int,
     val registrationDate: String,
-    val guideNumber: String? = null,
     val origin: String? = null,
-    val arrivalCondition: String? = null,
-    val observations: String? = null,
-    val documentFile: String? = null
+    val observations: String? = null
 )
 
 @Serializable
@@ -32,11 +29,8 @@ data class RegistrationResponse(
     val originName: String,
     val registeredByName: String,
     val registrationDate: String,
-    val guideNumber: String?,
     val origin: String?,
-    val arrivalCondition: String?,
-    val observations: String?,
-    val documentFile: String?
+    val observations: String?
 )
 
 @Serializable
@@ -46,8 +40,7 @@ data class DeregistrationRequest(
     val registeredBy: Int,
     val deregistrationDate: String,
     val destination: String? = null,
-    val observations: String? = null,
-    val documentFile: String? = null
+    val observations: String? = null
 )
 
 @Serializable
@@ -63,8 +56,7 @@ data class DeregistrationResponse(
     val registeredByName: String,
     val deregistrationDate: String,
     val destination: String?,
-    val observations: String?,
-    val documentFile: String?
+    val observations: String?
 )
 
 class RegistrationService {
@@ -83,11 +75,8 @@ class RegistrationService {
             stmt[originId] = data.originId
             stmt[registeredBy] = data.registeredBy
             stmt[registrationDate] = LocalDate.parse(data.registrationDate)
-            stmt[guideNumber] = data.guideNumber
             stmt[origin] = data.origin
-            stmt[arrivalCondition] = data.arrivalCondition
             stmt[observations] = data.observations
-            stmt[documentFile] = data.documentFile
         }[Registrations.id].value
     }
 
@@ -110,11 +99,8 @@ class RegistrationService {
             stmt[originId] = data.originId
             stmt[registeredBy] = data.registeredBy
             stmt[registrationDate] = LocalDate.parse(data.registrationDate)
-            stmt[guideNumber] = data.guideNumber
             stmt[origin] = data.origin
-            stmt[arrivalCondition] = data.arrivalCondition
             stmt[observations] = data.observations
-            stmt[documentFile] = data.documentFile
         } > 0
     }
 
@@ -138,14 +124,16 @@ class RegistrationService {
             stmt[causeId] = data.causeId
             stmt[registeredBy] = data.registeredBy
             stmt[deregistrationDate] = LocalDate.parse(data.deregistrationDate)
-            stmt[destination] = data.destination
             stmt[observations] = data.observations
-            stmt[documentFile] = data.documentFile
         }[Deregistrations.id].value
     }
 
     suspend fun getAllDeregistrations(): List<DeregistrationResponse> = dbQuery {
-        (Deregistrations innerJoin Specimens innerJoin Species innerJoin DeregistrationCauses innerJoin Users)
+        Deregistrations
+            .innerJoin(Specimens, { Deregistrations.specimenId }, { Specimens.id })
+            .innerJoin(Species, { Specimens.speciesId }, { Species.id })
+            .innerJoin(DeregistrationCauses, { Deregistrations.causeId }, { DeregistrationCauses.id })
+            .innerJoin(Users, { Deregistrations.registeredBy }, { Users.id })
             .selectAll()
             .map { toDeregistrationResponse(it) }
     }
@@ -161,11 +149,8 @@ class RegistrationService {
         originName = row[RegistrationOrigins.originName],
         registeredByName = row[Users.username],
         registrationDate = row[Registrations.registrationDate].toString(),
-        guideNumber = row[Registrations.guideNumber],
         origin = row[Registrations.origin],
-        arrivalCondition = row[Registrations.arrivalCondition],
-        observations = row[Registrations.observations],
-        documentFile = row[Registrations.documentFile]
+        observations = row[Registrations.observations]
     )
 
     private fun toDeregistrationResponse(row: ResultRow) = DeregistrationResponse(
@@ -179,8 +164,7 @@ class RegistrationService {
         causeName = row[DeregistrationCauses.causeName],
         registeredByName = row[Users.username],
         deregistrationDate = row[Deregistrations.deregistrationDate].toString(),
-        destination = row[Deregistrations.destination],
-        observations = row[Deregistrations.observations],
-        documentFile = row[Deregistrations.documentFile]
+        destination = null,
+        observations = row[Deregistrations.observations]
     )
 }
