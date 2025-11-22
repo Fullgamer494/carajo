@@ -1,4 +1,4 @@
-ktor:
+git ktor:
   application:
     modules:
       - com.hugin_munin.ApplicationKt.module
