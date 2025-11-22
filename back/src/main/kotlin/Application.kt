@@ -1,5 +1,7 @@
 package com.hugin_munin
 
+import com.hugin_munin.infrastructure.database.DatabaseFactory
+//import com.hugin_munin.infrastructure.plugins.*
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
@@ -7,10 +9,11 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    DatabaseFactory.init(environment)
+
     configureSerialization()
-    configureDatabases()
-    configureMonitoring()
     configureHTTP()
+    configureMonitoring()
     configureSecurity()
     configureRouting()
 }
