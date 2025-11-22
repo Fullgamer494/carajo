@@ -33,4 +33,6 @@ dependencies {
 
     //Extra dependencies
     implementation("com.zaxxer:HikariCP:7.0.2")
+    implementation(libs.exposed.dao)
+    implementation(libs.exposed.java.time)
 }
