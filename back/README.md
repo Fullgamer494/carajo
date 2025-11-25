@@ -1,4 +1,4 @@
-# backend
+# api
 
 This project was created using the [Ktor Project Generator](https://start.ktor.io).
 
@@ -14,16 +14,11 @@ Here's a list of features included in this project:
 
 | Name                                                                   | Description                                                                        |
 | ------------------------------------------------------------------------|------------------------------------------------------------------------------------ |
+| [Request Validation](https://start.ktor.io/p/request-validation)       | Adds validation for incoming requests                                              |
 | [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [Postgres](https://start.ktor.io/p/postgres)                           | Adds Postgres database to your application                                         |
-| [Exposed](https://start.ktor.io/p/exposed)                             | Adds Exposed database to your application                                          |
-| [Call Logging](https://start.ktor.io/p/call-logging)                   | Logs client requests                                                               |
 | [Status Pages](https://start.ktor.io/p/status-pages)                   | Provides exception handling for routes                                             |
-| [CORS](https://start.ktor.io/p/cors)                                   | Enables Cross-Origin Resource Sharing (CORS)                                       |
-| [Authentication](https://start.ktor.io/p/auth)                         | Provides extension point for handling the Authorization header                     |
-| [Authentication JWT](https://start.ktor.io/p/auth-jwt)                 | Handles JSON Web Token (JWT) bearer authentication scheme                          |
+| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
+| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
 
 ## Building & Running
 

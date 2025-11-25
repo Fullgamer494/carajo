@@ -1,5 +1,6 @@
 package com.hugin_munin
 
+import com.hugin_munin.api.module
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
@@ -8,8 +9,7 @@ import kotlin.test.assertEquals
 
 class ApplicationTest {
 
-    // Test comentado temporalmente - requiere configuración de BD de test
-    // @Test
+    @Test
     fun testRoot() = testApplication {
         application {
             module()

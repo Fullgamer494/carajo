@@ -1,44 +1,50 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ktor)
-    alias(libs.plugins.kotlin.plugin.serialization)
+    kotlin("jvm") version "2.0.21"
+    id("io.ktor.plugin") version "3.0.3"
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 group = "com.hugin_munin"
 version = "0.0.1"
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain")
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
-    implementation(libs.ktor.server.core)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.server.content.negotiation)
-    implementation(libs.postgresql)
-    implementation(libs.h2)
-    implementation(libs.exposed.core)
-    implementation(libs.exposed.jdbc)
-    implementation(libs.ktor.server.call.logging)
-    implementation(libs.ktor.server.host.common)
-    implementation(libs.ktor.server.status.pages)
-    implementation(libs.ktor.server.cors)
-    implementation(libs.ktor.server.auth)
-    implementation(libs.ktor.server.auth.jwt)
-    implementation(libs.ktor.server.netty)
-    implementation(libs.logback.classic)
-    implementation(libs.ktor.server.config.yaml)
-    testImplementation(libs.ktor.server.test.host)
-    testImplementation(libs.kotlin.test.junit)
+    // Ktor
+    implementation("io.ktor:ktor-server-core-jvm:3.0.3")
+    implementation("io.ktor:ktor-server-netty-jvm:3.0.3")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:3.0.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.0.3")
+    implementation("io.ktor:ktor-server-status-pages-jvm:3.0.3")
+    implementation("io.ktor:ktor-server-config-yaml:3.0.3")
 
-    //Extra dependencies
-    implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation(libs.exposed.dao)
-    implementation(libs.exposed.java.time)
+    // Logging
+    implementation("ch.qos.logback:logback-classic:1.4.14")
 
-    val ktor_version = "3.3.2"
+    // Exposed
+    implementation("org.jetbrains.exposed:exposed-core:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.41.1")
 
-    implementation("io.ktor:ktor-server-content-negotiation:${ktor_version}")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
-    implementation("io.ktor:ktor-server-cors:${ktor_version}")
+    // PostgreSQL
+    implementation("org.postgresql:postgresql:42.7.1")
+    implementation("com.zaxxer:HikariCP:5.1.0")
+
+    // Koin para Ktor 3.x
+    implementation("io.insert-koin:koin-ktor:4.0.0")
+    implementation("io.insert-koin:koin-logger-slf4j:4.0.0")
+
+    // Kotlinx DateTime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
+
+    // Testing
+    testImplementation("io.ktor:ktor-server-test-host-jvm:3.0.3")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.21")
 }

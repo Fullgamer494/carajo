@@ -1,4 +1,4 @@
-rootProject.name = "backend"
+rootProject.name = "api"
 
 dependencyResolutionManagement {
     repositories {
