@@ -12,6 +12,14 @@ class EspecimenService(
     // ID Fijo para "Tipo Reporte: Traslado"
     private val TIPO_REPORTE_TRASLADO_ID = 5
 
+    suspend fun getAllRegister(): List<EspecimenDetalle> {
+        return especimenRepository.findAll()
+    }
+
+    suspend fun getRegisterById(id: Int): EspecimenDetalle? {
+        return especimenRepository.findById(id)
+    }
+
     suspend fun registerEspecimen(
         especieData: Especie,
         especimenData: Especimen,
@@ -48,14 +56,6 @@ class EspecimenService(
         altaRepository.save(altaParaGuardar)
 
         return nuevoEspecimen
-    }
-
-    suspend fun getAllRegister(): List<EspecimenDetalle> {
-        return especimenRepository.findAll()
-    }
-
-    suspend fun getRegisterById(id: Int): EspecimenDetalle? {
-        return especimenRepository.findById(id)
     }
 
 

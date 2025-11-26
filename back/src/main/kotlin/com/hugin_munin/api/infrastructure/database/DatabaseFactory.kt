@@ -1,9 +1,6 @@
 package com.hugin_munin.api.infrastructure.database
 
 import org.jetbrains.exposed.sql.Database
-import kotlinx.coroutines.Dispatchers
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 
@@ -22,7 +19,4 @@ object DatabaseFactory {
         val dataSource = HikariDataSource(config)
         Database.connect(dataSource)
     }
-
-    suspend fun <T> dbQuery(block: suspend Transaction.() -> T): T =
-        newSuspendedTransaction(Dispatchers.IO, statement = block)
 }
