@@ -1,14 +1,32 @@
 package com.hugin_munin.api.infrastructure.database.repositories
 
+import com.hugin_munin.api.domain.models.OrigenAlta
 import com.hugin_munin.api.domain.models.Reporte
 import com.hugin_munin.api.domain.models.ReporteTraslado
 import com.hugin_munin.api.domain.ports.ReporteRepository
 import com.hugin_munin.api.infrastructure.database.DatabaseFactory.dbQuery
 import com.hugin_munin.api.infrastructure.database.schemas.ReporteTable
 import com.hugin_munin.api.infrastructure.database.schemas.ReporteTrasladoTable
-import org.jetbrains.exposed.sql.insert
+import com.hugin_munin.api.infrastructure.database.schemas.OrigenAltaTable
+import org.jetbrains.exposed.sql.*
 
 class ReporteRepositoryImpl : ReporteRepository {
+
+    override suspend fun findById(id: Int): Reporte? = dbQuery {
+        ReporteTable.select { ReporteTable.id eq id }
+            .map { row ->
+                Reporte(
+                    id = row[ReporteTable.id],
+                    tipoReporteId = row[ReporteTable.tipoReporteId],
+                    especimenId = row[ReporteTable.especimenId],
+                    responsableId = row[ReporteTable.responsableId],
+                    asunto = row[ReporteTable.asunto],
+                    fechaReporte = row[ReporteTable.fechaReporte],
+                    contenido = row[ReporteTable.contenido]
+                )
+            }
+            .singleOrNull()
+    }
 
     override suspend fun save(reporte: Reporte): Reporte = dbQuery {
         val insertStatement = ReporteTable.insert {
@@ -19,9 +37,7 @@ class ReporteRepositoryImpl : ReporteRepository {
             it[fechaReporte] = reporte.fechaReporte
             it[contenido] = reporte.contenido
         }
-
         val id = insertStatement.resultedValues?.singleOrNull()?.get(ReporteTable.id)
-            ?.let { it as? Int }
         reporte.copy(id = id)
     }
 
@@ -34,5 +50,31 @@ class ReporteRepositoryImpl : ReporteRepository {
             it[ubicacionDestino] = traslado.ubicacionDestino
             it[motivo] = traslado.motivo
         }
+    }
+
+    override suspend fun findTrasladoByReporteId(reporteId: Int): ReporteTraslado? = dbQuery {
+        ReporteTrasladoTable.select { ReporteTrasladoTable.reporteId eq reporteId }
+            .map { row ->
+                ReporteTraslado(
+                    reporteId = row[ReporteTrasladoTable.reporteId],
+                    areaOrigen = row[ReporteTrasladoTable.areaOrigen],
+                    areaDestino = row[ReporteTrasladoTable.areaDestino],
+                    ubicacionOrigen = row[ReporteTrasladoTable.ubicacionOrigen],
+                    ubicacionDestino = row[ReporteTrasladoTable.ubicacionDestino],
+                    motivo = row[ReporteTrasladoTable.motivo]
+                )
+            }
+            .singleOrNull()
+    }
+
+    override suspend fun findOrigenAltaById(id: Int): OrigenAlta? = dbQuery {
+        OrigenAltaTable.select { OrigenAltaTable.id eq id }
+            .map { row ->
+                OrigenAlta(
+                    id = row[OrigenAltaTable.id],
+                    nombre = row[OrigenAltaTable.nombre]
+                )
+            }
+            .singleOrNull()
     }
 }

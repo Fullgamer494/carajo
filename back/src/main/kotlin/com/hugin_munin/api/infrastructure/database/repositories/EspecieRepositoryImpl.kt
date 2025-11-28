@@ -14,6 +14,12 @@ class EspecieRepositoryImpl : EspecieRepository {
         especie = row[EspecieTable.especie]
     )
 
+    override suspend fun findById(id: Int): Especie? = dbQuery {
+        EspecieTable.select { EspecieTable.id eq id }
+            .map(::resultRowToEspecie)
+            .singleOrNull()
+    }
+
     override suspend fun findByGeneroAndEspecie(genero: String, especie: String): Especie? = dbQuery {
         EspecieTable.select {
             (EspecieTable.genero eq genero) and (EspecieTable.especie eq especie)
@@ -27,7 +33,6 @@ class EspecieRepositoryImpl : EspecieRepository {
             it[genero] = especie.genero
             it[EspecieTable.especie] = especie.especie
         }
-        // Devuelve el ID generado por la base de datos (SERIAL)
         val id = insertStatement.resultedValues?.singleOrNull()?.get(EspecieTable.id)
         especie.copy(id = id)
     }

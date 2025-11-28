@@ -1,64 +1,31 @@
 package com.hugin_munin.api.infrastructure.database.repositories
 
 import com.hugin_munin.api.domain.models.Especimen
-import com.hugin_munin.api.domain.models.EspecimenDetalle
 import com.hugin_munin.api.domain.ports.EspecimenRepository
 import com.hugin_munin.api.infrastructure.database.DatabaseFactory.dbQuery
-import com.hugin_munin.api.infrastructure.database.schemas.*
+import com.hugin_munin.api.infrastructure.database.schemas.EspecimenTable
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class EspecimenRepositoryImpl : EspecimenRepository {
 
-    override suspend fun findAll(): List<EspecimenDetalle> = dbQuery {
-        EspecimenTable
-            .innerJoin(EspecieTable, { especieId }, { EspecieTable.id })
-            .innerJoin(RegistroAltaTable, { EspecimenTable.id }, { especimenId })
-            .innerJoin(OrigenAltaTable, { RegistroAltaTable.origenAltaId }, { OrigenAltaTable.id })
-            .innerJoin(ReporteTable, { RegistroAltaTable.idReporteTraslado }, { ReporteTable.id })
-            .innerJoin(ReporteTrasladoTable, { ReporteTable.id }, { reporteId })
-            .selectAll()
-            .map { row ->
-                EspecimenDetalle(
-                    id = row[EspecimenTable.id],
-                    numInventario = row[EspecimenTable.numInventario],
-                    genero = row[EspecieTable.genero],
-                    especieNombre = row[EspecieTable.especie],
-                    activo = row[EspecimenTable.activo],
-                    origenAltaNombre = row[OrigenAltaTable.nombre],
-                    procedencia = row[RegistroAltaTable.procedencia],
-                    observacion = row[RegistroAltaTable.observacion],
-                    fechaIngreso = row[RegistroAltaTable.fechaIngreso],
-                    areaDestino = row[ReporteTrasladoTable.areaDestino],
-                    ubicacionDestino = row[ReporteTrasladoTable.ubicacionDestino]
-                )
-            }
+    private fun resultRowToEspecimen(row: ResultRow) = Especimen(
+        id = row[EspecimenTable.id],
+        numInventario = row[EspecimenTable.numInventario],
+        especieId = row[EspecimenTable.especieId],
+        nombre = row[EspecimenTable.nombre],
+        activo = row[EspecimenTable.activo]
+    )
+
+    override suspend fun findAll(): List<Especimen> = dbQuery {
+        EspecimenTable.selectAll()
+            .map(::resultRowToEspecimen)
     }
 
-    override suspend fun findById(id: Int): EspecimenDetalle? = dbQuery {
-        EspecimenTable
-            .innerJoin(EspecieTable, { especieId }, { EspecieTable.id })
-            .innerJoin(RegistroAltaTable, { EspecimenTable.id }, { especimenId })
-            .innerJoin(OrigenAltaTable, { RegistroAltaTable.origenAltaId }, { OrigenAltaTable.id })
-            .innerJoin(ReporteTable, { RegistroAltaTable.idReporteTraslado }, { ReporteTable.id })
-            .innerJoin(ReporteTrasladoTable, { ReporteTable.id }, { reporteId })
-            .selectAll()
-            .andWhere { EspecimenTable.id eq id }
+    override suspend fun findById(id: Int): Especimen? = dbQuery {
+        EspecimenTable.select { EspecimenTable.id eq id }
+            .map(::resultRowToEspecimen)
             .singleOrNull()
-            ?.let { row ->
-                EspecimenDetalle(
-                    id = row[EspecimenTable.id],
-                    numInventario = row[EspecimenTable.numInventario],
-                    genero = row[EspecieTable.genero],
-                    especieNombre = row[EspecieTable.especie],
-                    activo = row[EspecimenTable.activo],
-                    origenAltaNombre = row[OrigenAltaTable.nombre],
-                    procedencia = row[RegistroAltaTable.procedencia],
-                    observacion = row[RegistroAltaTable.observacion],
-                    fechaIngreso = row[RegistroAltaTable.fechaIngreso],
-                    areaDestino = row[ReporteTrasladoTable.areaDestino],
-                    ubicacionDestino = row[ReporteTrasladoTable.ubicacionDestino]
-                )
-            }
     }
 
     override suspend fun save(especimen: Especimen): Especimen = dbQuery {
@@ -70,5 +37,19 @@ class EspecimenRepositoryImpl : EspecimenRepository {
         }
         val id = insertStatement.resultedValues?.singleOrNull()?.get(EspecimenTable.id)
         especimen.copy(id = id)
+    }
+
+    override suspend fun update(id: Int, especimen: Especimen): Especimen? = dbQuery {
+        val rowsAffected = EspecimenTable.update({ EspecimenTable.id eq id }) {
+            it[numInventario] = especimen.numInventario
+            it[especieId] = especimen.especieId
+            it[nombre] = especimen.nombre
+            it[activo] = especimen.activo
+        }
+        if (rowsAffected > 0) especimen.copy(id = id) else null
+    }
+
+    override suspend fun delete(id: Int): Boolean = dbQuery {
+        EspecimenTable.deleteWhere { EspecimenTable.id eq id } > 0
     }
 }
